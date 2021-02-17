@@ -2,6 +2,8 @@ package com.demospring.course.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.demospring.course.entities.enums.OrderStatus;
@@ -23,30 +26,19 @@ public class Order implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@JsonFormat(shape = Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "GMT")
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
 	private Instant moment;
 
 	private Integer orderStatus;
-	
-	public OrderStatus getOrderStatus() {
-		return OrderStatus.valueOf(orderStatus);
-	}
-
-	public void setOrderStatus(OrderStatus orderStatus) {
-		if(orderStatus!=null)
-		this.orderStatus = orderStatus.getCode();
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 
 	@ManyToOne
 	@JoinColumn(name = "client_id")
 	private User client;
 
+	@OneToMany(mappedBy = "id.order")
+	private Set<OrderItem> items = new HashSet<>();
+	
 	public Order() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public Order(Long id, Instant moment, OrderStatus orderStatus, User client) {
@@ -54,6 +46,15 @@ public class Order implements Serializable {
 		this.moment = moment;
 		setOrderStatus(orderStatus);
 		this.client = client;
+	}
+
+	public OrderStatus getOrderStatus() {
+		return OrderStatus.valueOf(orderStatus);
+	}
+
+	public void setOrderStatus(OrderStatus orderStatus) {
+		if (orderStatus != null)
+			this.orderStatus = orderStatus.getCode();
 	}
 
 	public Long getId() {
@@ -78,6 +79,10 @@ public class Order implements Serializable {
 
 	public void setClient(User client) {
 		this.client = client;
+	}
+
+	public Set<OrderItem> getItems() {
+		return items;
 	}
 
 	@Override
