@@ -8,36 +8,37 @@ import org.springframework.stereotype.Service;
 
 import com.demospring.course.entities.User;
 import com.demospring.course.repositories.UserRepository;
+import com.demospring.course.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
-	public List<User> findAll(){
+
+	public List<User> findAll() {
 		return userRepository.findAll();
 	}
-	
+
 	public User findById(Long id) {
 		Optional<User> obj = userRepository.findById(id);
-		return obj.get();
+		return obj.orElseThrow(() -> new ResourceNotFoundException(id));
 	}
-	
+
 	public User insert(User user) {
 		return userRepository.save(user);
 	}
-	
+
 	public void delete(Long id) {
 		userRepository.deleteById(id);
 	}
-	
+
 	public User update(Long id, User user) {
 		User entity = userRepository.getOne(id);
-		updateData(entity,user);
+		updateData(entity, user);
 		return userRepository.save(entity);
 	}
-	
+
 	private void updateData(User entity, User user) {
 		entity.setName(user.getName());
 		entity.setEmail(user.getEmail());
